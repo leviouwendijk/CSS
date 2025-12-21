@@ -1,0 +1,15 @@
+{
+  "originHash" : "d5a66eb54bd7a085677e6a345c3539f9e3a7f4b9cc83b7bf9aaacc79e9661982",
+  "pins" : [
+    {
+      "identity" : "indentation",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/leviouwendijk/Indentation.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "8b85325433aa97ee19c9c77f564500be189978d6"
+      }
+    }
+  ],
+  "version" : 3
+}

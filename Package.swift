@@ -12,11 +12,16 @@ let package = Package(
             targets: ["CSS"]
         ),
     ],
+    dependencies: [
+        .package(url: "https://github.com/leviouwendijk/Indentation.git", branch: "master"),
+    ],
     targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "CSS"
+            name: "CSS",
+            dependencies: [
+                .product(name: "Indentation", package: "Indentation"),
+            ],
+
         ),
         .testTarget(
             name: "CSSTests",
