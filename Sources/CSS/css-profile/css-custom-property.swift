@@ -21,7 +21,7 @@ public struct CSSCustomProperty: Sendable, Equatable {
 }
 
 @inline(__always)
-internal func _extractCustomCSSProperties(
+public func _extractCustomCSSProperties(
     from rules: [CSSRule],
     selector: String,
     filter: ((CSSCustomProperty) -> Bool)?
