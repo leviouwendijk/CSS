@@ -57,7 +57,7 @@ public struct CSSStyleSheet: Sendable, Equatable {
     //     )
     // }
 
-    static func merged(_ sheets: [CSSStyleSheet]) -> CSSStyleSheet {
+    public static func merged(_ sheets: [CSSStyleSheet]) -> CSSStyleSheet {
         var allRules: [CSSRule] = []
         var allMedia: [CSSMedia] = []
         var allKeyframes: [CSSKeyframes] = []
