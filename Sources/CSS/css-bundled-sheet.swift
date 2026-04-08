@@ -19,7 +19,7 @@ public func bundle<Scope: ScopeIdentifying>(
     _ sheet: CSSStyleSheet
 ) -> CSSBundledSheet {
     CSSBundledSheet(
-        scope: scope.scope_id,
+        scope: scope.scope,
         sheet: sheet
     )
 }

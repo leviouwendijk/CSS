@@ -589,7 +589,7 @@ public extension CSSStyleSheet {
         _ scope: Scope
     ) -> CSSBundledSheet {
         CSSBundledSheet(
-            scope: scope.scope_id,
+            scope: scope.scope,
             sheet: self
         )
     }
