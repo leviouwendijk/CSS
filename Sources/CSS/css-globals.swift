@@ -153,3 +153,10 @@ public func stylesheet(
 ) -> CSSContributionSet {
     CSSContributionSet(content)
 }
+
+@inlinable
+public func css(
+    @CSSBuilder _ content: () -> [CSSContributionUnit]
+) -> CSSContributionSet {
+    CSSContributionSet(content)
+}

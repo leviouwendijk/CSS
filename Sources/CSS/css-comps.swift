@@ -116,3 +116,11 @@ public enum CSS {
         CSSKeyframeStep(selector: "\(value)%", declarations: declarations())
     }
 }
+
+public extension CSS {
+    static func stylesheet(
+        @CSSBuilder _ content: () -> [CSSContributionUnit]
+    ) -> CSSContributionSet {
+        CSSContributionSet(content)
+    }
+}
