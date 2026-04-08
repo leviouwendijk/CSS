@@ -1,4 +1,5 @@
 import Foundation
+import DSL
 
 @inlinable
 public func decl(
@@ -128,4 +129,27 @@ public func stylesheet(
         media: media,
         keyframes: keyframes
     )
+}
+
+@inlinable
+public func bundle<Scope: ScopeIdentifying>(
+    _ scope: Scope,
+    @CSSBuilder _ content: () -> [CSSContributionUnit]
+) -> CSSContributionUnit {
+    CSS.bundle(scope, content)
+}
+
+@inlinable
+public func bundle(
+    _ scope: ScopeIdentifier,
+    @CSSBuilder _ content: () -> [CSSContributionUnit]
+) -> CSSContributionUnit {
+    CSS.bundle(scope, content)
+}
+
+@inlinable
+public func stylesheet(
+    @CSSBuilder _ content: () -> [CSSContributionUnit]
+) -> CSSContributionSet {
+    CSSContributionSet(content)
 }
