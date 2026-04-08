@@ -1,5 +1,6 @@
 import Foundation
 import Indentation
+import DSL
 
 public struct CSSStyleSheet: Sendable, Equatable {
     public var rules: [CSSRule]
@@ -580,5 +581,25 @@ extension CSSStyleSheet {
             }
         }
         return out
+    }
+}
+
+public extension CSSStyleSheet {
+    func scoped<Scope: ScopeIdentifying>(
+        _ scope: Scope
+    ) -> CSSBundledSheet {
+        CSSBundledSheet(
+            scope: scope.scope_id,
+            sheet: self
+        )
+    }
+
+    func scoped(
+        _ scope: ScopeIdentifier
+    ) -> CSSBundledSheet {
+        CSSBundledSheet(
+            scope: scope,
+            sheet: self
+        )
     }
 }
