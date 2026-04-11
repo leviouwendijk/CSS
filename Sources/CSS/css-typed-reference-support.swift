@@ -51,32 +51,6 @@ public extension CSS {
         "var(\(value.rawValue))"
     }
 
-    // static func ref<Namespace>(
-    //     _ variable: CSSVariable<Namespace>
-    // ) -> String {
-    //     "var(\(variable.rawValue))"
-    // }
-
-    // static func ref<Namespace>(
-    //     _ variable: CSSVariable<Namespace>,
-    //     fallback: String
-    // ) -> String {
-    //     "var(\(variable.rawValue), \(fallback))"
-    // }
-
-    // static func ref(
-    //     _ variable: AnyCSSVariable
-    // ) -> String {
-    //     "var(\(variable.rawValue))"
-    // }
-
-    // static func ref(
-    //     _ variable: AnyCSSVariable,
-    //     fallback: String
-    // ) -> String {
-    //     "var(\(variable.rawValue), \(fallback))"
-    // }
-
     static func variable<Namespace>(
         _ value: CSSVariable<Namespace>,
         fallback: String
