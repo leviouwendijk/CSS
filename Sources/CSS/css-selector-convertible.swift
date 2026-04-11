@@ -76,6 +76,14 @@ public extension CSSSelectorConvertible {
     ) -> CSSSelector {
         cssSelector.generalSibling(other.cssSelector)
     }
+
+    func compound(
+        _ other: any CSSSelectorConvertible
+    ) -> CSSSelector {
+        CSSSelector(
+            "\(cssSelector.raw)\(other.cssSelector.raw)"
+        )
+    }
 }
 
 public extension CSSSelector {
