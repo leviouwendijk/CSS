@@ -76,6 +76,26 @@ public extension CSS {
     // ) -> String {
     //     "var(\(variable.rawValue), \(fallback))"
     // }
+
+    static func variable<Namespace>(
+        _ value: CSSVariable<Namespace>,
+        fallback: String
+    ) -> String {
+        "var(\(value.rawValue), \(fallback))"
+    }
+
+    static func variable(
+        _ value: AnyCSSVariable
+    ) -> String {
+        "var(\(value.rawValue))"
+    }
+
+    static func variable(
+        _ value: AnyCSSVariable,
+        fallback: String
+    ) -> String {
+        "var(\(value.rawValue), \(fallback))"
+    }
 }
 
 @inlinable
@@ -102,9 +122,39 @@ public func decl<Namespace>(
     CSS.decl(property, value)
 }
 
+// @inlinable
+// public func cssvar<Namespace>(
+//     _ value: CSSVariable<Namespace>
+// ) -> String {
+//     CSS.variable(value)
+// }
+
 @inlinable
 public func cssvar<Namespace>(
     _ value: CSSVariable<Namespace>
 ) -> String {
     CSS.variable(value)
+}
+
+@inlinable
+public func cssvar<Namespace>(
+    _ value: CSSVariable<Namespace>,
+    fallback: String
+) -> String {
+    CSS.variable(value, fallback: fallback)
+}
+
+@inlinable
+public func cssvar(
+    _ value: AnyCSSVariable
+) -> String {
+    CSS.variable(value)
+}
+
+@inlinable
+public func cssvar(
+    _ value: AnyCSSVariable,
+    fallback: String
+) -> String {
+    CSS.variable(value, fallback: fallback)
 }
