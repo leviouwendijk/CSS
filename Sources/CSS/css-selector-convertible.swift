@@ -1,42 +1,82 @@
 import DSL
 
-public protocol CSSSelectorConvertible: Sendable {
-    var cssSelector: CSSSelector { get }
+public protocol CSSSelectorConvertible:
+    Sendable
+{
+    var cssSelector:
+        CSSSelector
+    {
+        get
+    }
 }
 
-extension CSSSelector: CSSSelectorConvertible {
-    public var cssSelector: CSSSelector {
+extension CSSSelector:
+    CSSSelectorConvertible
+{
+    public var cssSelector:
+        CSSSelector
+    {
         self
     }
 }
 
-extension AnyHTMLClass: CSSSelectorConvertible {
-    public var cssSelector: CSSSelector {
-        .class(rawValue)
+extension AnyHTMLClass:
+    CSSSelectorConvertible
+{
+    public var cssSelector:
+        CSSSelector
+    {
+        .class(
+            self
+        )
     }
 }
 
-extension AnyHTMLID: CSSSelectorConvertible {
-    public var cssSelector: CSSSelector {
-        .id(rawValue)
+extension AnyHTMLID:
+    CSSSelectorConvertible
+{
+    public var cssSelector:
+        CSSSelector
+    {
+        .id(
+            self
+        )
     }
 }
 
-extension HTMLClass: CSSSelectorConvertible {
-    public var cssSelector: CSSSelector {
-        .class(rawValue)
+extension HTMLClass:
+    CSSSelectorConvertible
+{
+    public var cssSelector:
+        CSSSelector
+    {
+        .class(
+            erased
+        )
     }
 }
 
-extension HTMLID: CSSSelectorConvertible {
-    public var cssSelector: CSSSelector {
-        .id(rawValue)
+extension HTMLID:
+    CSSSelectorConvertible
+{
+    public var cssSelector:
+        CSSSelector
+    {
+        .id(
+            erased
+        )
     }
 }
 
-extension DOMSelectorTarget: CSSSelectorConvertible {
-    public var cssSelector: CSSSelector {
-        CSSSelector(self)
+extension DOMSelectorTarget:
+    CSSSelectorConvertible
+{
+    public var cssSelector:
+        CSSSelector
+    {
+        CSSSelector(
+            self
+        )
     }
 }
 
@@ -44,78 +84,125 @@ public extension CSSSelectorConvertible {
     func pseudoClass(
         _ name: String
     ) -> CSSSelector {
-        cssSelector.pseudoClass(name)
+        cssSelector
+            .pseudoClass(
+                name
+            )
     }
 
     func pseudoElement(
         _ name: String
     ) -> CSSSelector {
-        cssSelector.pseudoElement(name)
+        cssSelector
+            .pseudoElement(
+                name
+            )
     }
 
     func descendant(
-        _ other: any CSSSelectorConvertible
+        _ other:
+            any CSSSelectorConvertible
     ) -> CSSSelector {
-        cssSelector.descendant(other.cssSelector)
+        cssSelector
+            .descendant(
+                other
+                    .cssSelector
+            )
     }
 
     func child(
-        _ other: any CSSSelectorConvertible
+        _ other:
+            any CSSSelectorConvertible
     ) -> CSSSelector {
-        cssSelector.child(other.cssSelector)
+        cssSelector
+            .child(
+                other
+                    .cssSelector
+            )
     }
 
-    func adjacentSibling(
-        _ other: any CSSSelectorConvertible
+    func sibling(
+        _ sibling:
+            CSSSelector
+                .Combinator
+                .Sibling,
+        _ other:
+            any CSSSelectorConvertible
     ) -> CSSSelector {
-        cssSelector.adjacentSibling(other.cssSelector)
-    }
-
-    func generalSibling(
-        _ other: any CSSSelectorConvertible
-    ) -> CSSSelector {
-        cssSelector.generalSibling(other.cssSelector)
+        cssSelector
+            .sibling(
+                sibling,
+                other
+                    .cssSelector
+            )
     }
 
     func compound(
-        _ other: any CSSSelectorConvertible
+        _ other:
+            any CSSSelectorConvertible
     ) -> CSSSelector {
-        CSSSelector(
-            "\(cssSelector.raw)\(other.cssSelector.raw)"
-        )
+        cssSelector
+            .compound(
+                other
+                    .cssSelector
+            )
     }
 }
 
 public extension CSSSelector {
     static func group(
-        _ selectors: [any CSSSelectorConvertible]
+        _ selectors:
+            [any CSSSelectorConvertible]
     ) -> CSSSelector {
-        CSSSelector(
+        group(
             selectors
-                .map(\.cssSelector.raw)
-                .joined(separator: ", ")
+                .map { selector in
+                    selector
+                        .cssSelector
+                }
         )
     }
 
     static func group(
-        _ selectors: any CSSSelectorConvertible...
+        _ selectors:
+            any CSSSelectorConvertible...
     ) -> CSSSelector {
-        group(selectors)
+        group(
+            selectors
+        )
     }
 }
 
 public extension CSS {
-    static func rule<Selector: CSSSelectorConvertible>(
-        _ selector: Selector,
-        _ declarations: [CSSDeclaration]
+    static func rule<
+        Selector:
+            CSSSelectorConvertible
+    >(
+        _ selector:
+            Selector,
+        _ declarations:
+            [CSSDeclaration]
     ) -> CSSRule {
-        rule(selector.cssSelector, declarations)
+        rule(
+            selector
+                .cssSelector,
+            declarations
+        )
     }
 
-    static func rule<Selector: CSSSelectorConvertible>(
-        _ selector: Selector,
-        _ declarations: CSSDeclaration...
+    static func rule<
+        Selector:
+            CSSSelectorConvertible
+    >(
+        _ selector:
+            Selector,
+        _ declarations:
+            CSSDeclaration...
     ) -> CSSRule {
-        rule(selector.cssSelector, declarations)
+        rule(
+            selector
+                .cssSelector,
+            declarations
+        )
     }
 }

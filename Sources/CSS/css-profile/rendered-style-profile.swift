@@ -72,8 +72,8 @@ public extension RenderedStyleProfile {
             let group = Group(
                 title: "All tokens",
                 swatches: tokens
-                    .sorted { $0.name < $1.name }
-                    .map { Swatch(name: $0.name, value: $0.value) }
+                    .sorted { $0.name.rawValue < $1.name.rawValue }
+                    .map { Swatch(name: $0.name.rawValue, value: $0.value.serialized) }
             )
 
             return RenderedStyleProfile(
@@ -102,10 +102,10 @@ public extension RenderedStyleProfile {
             guard !tokens.isEmpty else { continue }
 
             let swatches = tokens
-                .sorted { $0.name < $1.name }
+                .sorted { $0.name.rawValue < $1.name.rawValue }
                 .map {
-                    usedNames.insert($0.name)
-                    return Swatch(name: $0.name, value: $0.value)
+                    usedNames.insert($0.name.rawValue)
+                    return Swatch(name: $0.name.rawValue, value: $0.value.serialized)
                 }
 
             groups.append(
@@ -119,9 +119,9 @@ public extension RenderedStyleProfile {
         if includeUngroupedGroup {
             let allTokens = sheet.customProperties(selector: selector)
             let leftovers = allTokens
-                .filter { !usedNames.contains($0.name) }
-                .sorted { $0.name < $1.name }
-                .map { Swatch(name: $0.name, value: $0.value) }
+                .filter { !usedNames.contains($0.name.rawValue) }
+                .sorted { $0.name.rawValue < $1.name.rawValue }
+                .map { Swatch(name: $0.name.rawValue, value: $0.value.serialized) }
 
             if !leftovers.isEmpty {
                 groups.append(

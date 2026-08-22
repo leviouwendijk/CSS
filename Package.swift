@@ -5,29 +5,64 @@ import PackageDescription
 
 let package = Package(
     name: "CSS",
+    platforms: [
+        .macOS(.v13)
+    ],
     products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "CSS",
-            targets: ["CSS"]
+            targets: [
+                "CSS",
+            ]
+        ),
+        .executable(
+            name: "csstest",
+            targets: [
+                "CSSTestFlows",
+            ]
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/leviouwendijk/DSL.git", branch: "master"),
-        .package(url: "https://github.com/leviouwendijk/Indentation.git", branch: "master"),
+        .package(
+            url: "https://github.com/leviouwendijk/DSL.git",
+            branch: "master"
+        ),
+        .package(
+            url: "https://github.com/leviouwendijk/Indentation.git",
+            branch: "master"
+        ),
+        .package(
+            url: "https://github.com/leviouwendijk/TestFlows.git",
+            branch: "master"
+        ),
     ],
     targets: [
         .target(
             name: "CSS",
             dependencies: [
-                .product(name: "DSL", package: "DSL"),
-                .product(name: "Indentation", package: "Indentation"),
-            ],
-
+                .product(
+                    name: "DSL",
+                    package: "DSL"
+                ),
+                .product(
+                    name: "Indentation",
+                    package: "Indentation"
+                ),
+            ]
         ),
-        .testTarget(
-            name: "CSSTests",
-            dependencies: ["CSS"]
+        .executableTarget(
+            name: "CSSTestFlows",
+            dependencies: [
+                "CSS",
+                .product(
+                    name: "DSL",
+                    package: "DSL"
+                ),
+                .product(
+                    name: "TestFlows",
+                    package: "TestFlows"
+                ),
+            ]
         ),
     ]
 )

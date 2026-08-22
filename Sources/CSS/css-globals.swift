@@ -3,10 +3,24 @@ import DSL
 
 @inlinable
 public func decl(
-    _ property: String,
-    _ value: String
+    _ property: CSSProperty,
+    _ value: CSSValue
 ) -> CSSDeclaration {
-    CSS.decl(property, value)
+    CSS.decl(
+        property,
+        value
+    )
+}
+
+@inlinable
+public func decl(
+    _ property: String,
+    _ value: CSSValue
+) -> CSSDeclaration {
+    CSS.decl(
+        property,
+        value
+    )
 }
 
 @inlinable

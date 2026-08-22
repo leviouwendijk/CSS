@@ -1,55 +1,117 @@
-import Foundation
+import DSL
 
-/// Simple view of a CSS custom property (`--foo`) pulled from a stylesheet.
-public struct CSSCustomProperty: Sendable, Equatable {
-    /// Selector this declaration came from (often `:root`).
-    public var selector: String
-    /// Custom property name, e.g. `"--bg"`.
-    public var name: String
-    /// Raw value from CSS, e.g. `"#ffffff"` or `"var(--gray-500)"`.
-    public var value: String
+/// Semantic view of a CSS custom-property declaration pulled from a stylesheet.
+public struct CSSCustomProperty:
+    Sendable,
+    Equatable
+{
+    /// Selector this declaration belongs to.
+    public let selector:
+        CSSSelector
+
+    /// Custom-property identity, e.g. `--bg`.
+    public let name:
+        AnyCSSVariable
+
+    /// Structured CSS value.
+    public let value:
+        CSSValue
 
     public init(
-        selector: String,
-        name: String,
-        value: String
+        selector:
+            CSSSelector,
+        name:
+            AnyCSSVariable,
+        value:
+            CSSValue
     ) {
-        self.selector = selector
-        self.name = name
-        self.value = value
+        self.selector =
+            selector
+
+        self.name =
+            name
+
+        self.value =
+            value
     }
 }
 
 @inline(__always)
 public func _extractCustomCSSProperties(
-    from rules: [CSSRule],
-    selector: String,
-    filter: ((CSSCustomProperty) -> Bool)?
+    from rules:
+        [CSSRule],
+    selector:
+        String,
+    filter:
+        (
+            (
+                CSSCustomProperty
+            ) -> Bool
+        )?
 ) -> [CSSCustomProperty] {
-    let rulesToScan = rules.filter { $0.selector == selector }
+    let target =
+        CSSSelector(
+            selector
+        )
 
-    var out: [CSSCustomProperty] = []
-    out.reserveCapacity(
-        rulesToScan.reduce(0) { $0 + $1.declarations.count }
+    let rulesToScan =
+        rules.filter {
+            $0.selector
+                == target
+        }
+
+    var output:
+        [CSSCustomProperty] =
+            []
+
+    output.reserveCapacity(
+        rulesToScan.reduce(
+            0
+        ) {
+            $0
+                + $1.declarations.count
+        }
     )
 
-    for rule in rulesToScan {
-        for decl in rule.declarations {
-            guard decl.property.hasPrefix("--") else { continue }
-
-            let token = CSSCustomProperty(
-                selector: rule.selector,
-                name: decl.property,
-                value: decl.value
-            )
-
-            if let filter, !filter(token) {
+    for rule
+        in rulesToScan
+    {
+        for declaration
+            in rule.declarations
+        {
+            guard
+                case .custom(
+                    let name
+                ) =
+                    declaration.property
+            else {
                 continue
             }
 
-            out.append(token)
+            let property =
+                CSSCustomProperty(
+                    selector:
+                        rule.selector,
+                    name:
+                        name,
+                    value:
+                        declaration.value
+                )
+
+            if
+                let filter,
+                !filter(
+                    property
+                )
+            {
+                continue
+            }
+
+            output.append(
+                property
+            )
         }
     }
 
-    return out
+    return output
 }

@@ -142,7 +142,7 @@ extension CSSStyleSheet {
             options.mergeDuplicateSelectors ? self.mergingDuplicateSelectors() : self
 
         var out = ""
-        var used_selector_cache: [String: SelectorUsage] = [:]
+        var used_selector_cache: [CSSSelector: SelectorUsage] = [:]
 
         func appendRule(_ rule: CSSRule, _ baseIndentTimes: Int) {
             let decision = decide(rule: rule, options: options, cache: &used_selector_cache)
@@ -196,7 +196,7 @@ extension CSSStyleSheet {
         let indentation = options.indentStep
         var out = ""
 
-        let selectorLine = "\(rule.selector) {"
+        let selectorLine = "\(rule.selector.serialized) {"
         if times > 0 {
             out += selectorLine.indent(indentation, times: times)
         } else {
@@ -206,7 +206,7 @@ extension CSSStyleSheet {
 
         let declTimes = times + 1
         for decl in rule.declarations {
-            out += "\(decl.property): \(decl.value);".indent(indentation, times: declTimes)
+            out += decl.serialized.indent(indentation, times: declTimes)
             out += "\n"
         }
 
@@ -229,7 +229,7 @@ extension CSSStyleSheet {
         var out = ""
 
         // @keyframes line
-        out += "@keyframes \(keyframes.name) {\n"
+        out += "@keyframes \(keyframes.name.serialized) {\n"
 
         for step in keyframes.steps {
             out += renderKeyframeStep(step, indentation: indentation, times: 1)
@@ -247,7 +247,7 @@ extension CSSStyleSheet {
         var out = ""
 
         // selector line, e.g. "from {" or "50% {"
-        let selectorLine = "\(step.selector) {"
+        let selectorLine = "\(step.selector.serialized) {"
         if times > 0 {
             out += selectorLine.indent(indentation, times: times)
         } else {
@@ -257,7 +257,7 @@ extension CSSStyleSheet {
 
         let declTimes = times + 1
         for decl in step.declarations {
-            out += "\(decl.property): \(decl.value);".indent(indentation, times: declTimes)
+            out += decl.serialized.indent(indentation, times: declTimes)
             out += "\n"
         }
 
@@ -275,7 +275,7 @@ extension CSSStyleSheet {
     private func renderMedia(
         _ media: CSSMedia,
         options: CSSRenderOptions,
-        cache: inout [String: SelectorUsage]
+        cache: inout [CSSSelector: SelectorUsage]
     ) -> String {
         var inner = ""
 
@@ -320,7 +320,7 @@ extension CSSStyleSheet {
     private func decide(
         rule: CSSRule,
         options: CSSRenderOptions,
-        cache: inout [String: SelectorUsage]
+        cache: inout [CSSSelector: SelectorUsage]
     ) -> RuleDecision {
         guard
             (options.usedClassNames?.isEmpty == false) ||
@@ -359,37 +359,72 @@ extension CSSStyleSheet {
     }
 
     private func isSelectorUsed(
-        _ selector: String,
-        usedClasses: Set<String>,
-        usedIDs: Set<String>
+        _ selector:
+            CSSSelector,
+        usedClasses:
+            Set<String>,
+        usedIDs:
+            Set<String>
     ) -> SelectorUsage {
-        let parts = selector.split(separator: ",")
-        var anyUsed = false
-        var anySimpleSeen = false
-        var anyUnknown = false
+        guard
+            let groups =
+                selector
+                    .symbolGroups
+        else {
+            return .unknown
+        }
 
-        for rawPart in parts {
-            let part = rawPart.trimmingCharacters(in: .whitespacesAndNewlines)
+        var anyUsed =
+            false
 
-            let classes = extractClasses(from: part)
-            let ids = extractIDs(from: part)
+        var anySimpleSeen =
+            false
 
-            // If this selector part has anything *besides* simple `.class` or `#id`
-            // tokens, we treat it as unknown and bail out of pruning.
-            if selectorHasNonClassIdSyntax(part) {
-                anyUnknown = true
+        var anyUnknown =
+            false
+
+        for group
+            in groups
+        {
+            guard
+                group
+                    .isPureClassOrID
+            else {
+                anyUnknown =
+                    true
+
                 continue
             }
 
-            if classes.isEmpty && ids.isEmpty {
-                anyUnknown = true
-                continue
-            }
+            anySimpleSeen =
+                true
 
-            anySimpleSeen = true
+            let classUsed =
+                group
+                    .classes
+                    .contains { value in
+                        usedClasses
+                            .contains(
+                                value.rawValue
+                            )
+                    }
 
-            if !usedClasses.isDisjoint(with: classes) || !usedIDs.isDisjoint(with: ids) {
-                anyUsed = true
+            let idUsed =
+                group
+                    .ids
+                    .contains { value in
+                        usedIDs
+                            .contains(
+                                value.rawValue
+                            )
+                    }
+
+            if
+                classUsed
+                || idUsed
+            {
+                anyUsed =
+                    true
             }
         }
 
@@ -397,96 +432,16 @@ extension CSSStyleSheet {
             return .used
         }
 
-        if !anySimpleSeen || anyUnknown {
+        if
+            !anySimpleSeen
+            || anyUnknown
+        {
             return .unknown
         }
 
-        // Every part was simple (.class / #id only) and all referenced tokens
-        // were missing from the HTML.
         return .unused
     }
 
-    private func extractClasses(from selector: String) -> Set<String> {
-        var result = Set<String>()
-        var current = ""
-        var i = selector.startIndex
-
-        while i < selector.endIndex {
-            let ch = selector[i]
-
-            if ch == "." {
-                current.removeAll()
-                i = selector.index(after: i)
-                while i < selector.endIndex {
-                    let c = selector[i]
-                    if isClassOrIdCharacter(c) {
-                        current.append(c)
-                        i = selector.index(after: i)
-                    } else {
-                        break
-                    }
-                }
-                if !current.isEmpty {
-                    result.insert(current)
-                }
-                continue
-            }
-
-            i = selector.index(after: i)
-        }
-
-        return result
-    }
-
-    private func extractIDs(from selector: String) -> Set<String> {
-        var result = Set<String>()
-        var current = ""
-        var i = selector.startIndex
-
-        while i < selector.endIndex {
-            let ch = selector[i]
-
-            if ch == "#" {
-                current.removeAll()
-                i = selector.index(after: i)
-                while i < selector.endIndex {
-                    let c = selector[i]
-                    if isClassOrIdCharacter(c) {
-                        current.append(c)
-                        i = selector.index(after: i)
-                    } else {
-                        break
-                    }
-                }
-                if !current.isEmpty {
-                    result.insert(current)
-                }
-                continue
-            }
-
-            i = selector.index(after: i)
-        }
-
-        return result
-    }
-
-    private func selectorHasNonClassIdSyntax(_ selector: String) -> Bool {
-        // Very conservative: if we see characters that usually indicate
-        // combinators, attribute selectors, pseudo-classes, etc., we bail.
-        let forbidden: Set<Character> = [" ", ">", "+", "~", "[", "]", ":", "*"]
-
-        for c in selector {
-            if forbidden.contains(c) {
-                return true
-            }
-        }
-
-        return false
-    }
-
-    private func isClassOrIdCharacter(_ c: Character) -> Bool {
-        c.isLetter || c.isNumber || c == "-" || c == "_"
-    }
 }
 
 extension Array where Element == [CSSStyleSheet] {
@@ -569,7 +524,7 @@ extension CSSStyleSheet {
         var out: [CSSRule] = []
         out.reserveCapacity(rules.count)
 
-        var indexBySelector: [String: Int] = [:]
+        var indexBySelector: [CSSSelector: Int] = [:]
         indexBySelector.reserveCapacity(rules.count)
 
         for rule in rules {
