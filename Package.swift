@@ -15,12 +15,6 @@ let package = Package(
                 "CSS",
             ]
         ),
-        .executable(
-            name: "csstest",
-            targets: [
-                "CSSTestFlows",
-            ]
-        ),
     ],
     dependencies: [
         .package(
@@ -29,10 +23,6 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/leviouwendijk/Indentation.git",
-            branch: "master"
-        ),
-        .package(
-            url: "https://github.com/leviouwendijk/TestFlows.git",
             branch: "master"
         ),
     ],
@@ -47,20 +37,6 @@ let package = Package(
                 .product(
                     name: "Indentation",
                     package: "Indentation"
-                ),
-            ]
-        ),
-        .executableTarget(
-            name: "CSSTestFlows",
-            dependencies: [
-                "CSS",
-                .product(
-                    name: "DSL",
-                    package: "DSL"
-                ),
-                .product(
-                    name: "TestFlows",
-                    package: "TestFlows"
                 ),
             ]
         ),
