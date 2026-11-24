@@ -2,7 +2,6 @@ public struct CSSContributionIdentifier:
     Sendable,
     Hashable,
     CustomStringConvertible,
-    ExpressibleByStringLiteral,
     CSSContributionIdentifying
 {
     public let rawValue:
@@ -17,11 +16,11 @@ public struct CSSContributionIdentifier:
     }
 
     public init(
-        stringLiteral value:
+        rawValue:
             String
     ) {
         self.init(
-            value
+            rawValue
         )
     }
 
