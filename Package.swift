@@ -18,7 +18,7 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            url: "https://github.com/leviouwendijk/DSL.git",
+            url: "https://github.com/swift-dsl/DSL.git",
             branch: "master"
         ),
         .package(
