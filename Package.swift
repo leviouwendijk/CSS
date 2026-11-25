@@ -22,7 +22,7 @@ let package = Package(
             branch: "master"
         ),
         .package(
-            url: "https://github.com/leviouwendijk/Indentation.git",
+            url: "https://github.com/swift-lco/Indentation.git",
             branch: "master"
         ),
     ],
