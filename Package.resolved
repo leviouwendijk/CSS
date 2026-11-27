@@ -1,5 +1,5 @@
 {
-  "originHash" : "74b3c823b2161a690d88ca1c338a09f6890c6fd16b2dc3b8df49964a89e231c5",
+  "originHash" : "0385a4fa2da5e948871fc5b663bf3cc42c417974013201db54773e2d3d29bb7f",
   "pins" : [
     {
       "identity" : "dsl",
@@ -7,7 +7,7 @@
       "location" : "https://github.com/swift-dsl/DSL.git",
       "state" : {
         "branch" : "master",
-        "revision" : "c25c620bc766e4a3e59e6224b11c9a868a5f88d5"
+        "revision" : "1fcf1866db115952433319e75f1fb505fcf31886"
       }
     },
     {

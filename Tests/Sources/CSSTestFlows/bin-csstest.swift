@@ -31,7 +31,85 @@ enum CSSFlowSuite:
         customPropertyRetention,
         animationIdentityRetention,
         contributionResolution,
+        themeLowering,
     ]
+
+    static let themeLowering =
+        TestFlow(
+            "theme-lowering",
+            title:
+                "A theme lowers to role custom properties with a dark scheme",
+            tags: [
+                "css",
+                "theme",
+            ]
+        ) {
+            Step(
+                "lower light and dark tokens"
+            ) {
+                let ink = ThemeColor(
+                    css: "#1d1d1f"
+                )
+                let paper = ThemeColor(
+                    css: "rgb(245, 245, 247)"
+                )
+                let theme = Theme(
+                    light: [
+                        .body: .init(
+                            foreground: ink,
+                            spacing: 1
+                        ),
+                        .link: .init(
+                            underline: true
+                        ),
+                    ],
+                    dark: [
+                        .body: .init(
+                            foreground: paper
+                        ),
+                    ]
+                )
+
+                let css = CSSTheme.styleSheet(
+                    theme
+                ).render(
+                    options: .init()
+                )
+
+                try Expect.true(
+                    css.contains("--theme-body-fg: #1d1d1f;"),
+                    "theme.light.foreground"
+                )
+                try Expect.true(
+                    css.contains("--theme-body-spacing: 1lh;"),
+                    "theme.light.spacing"
+                )
+                try Expect.true(
+                    css.contains("--theme-link-decoration: underline;"),
+                    "theme.light.decoration"
+                )
+                try Expect.true(
+                    css.contains("@media (prefers-color-scheme: dark)"),
+                    "theme.dark.media"
+                )
+                try Expect.true(
+                    css.contains("--theme-body-fg: #f5f5f7;"),
+                    "theme.dark.foreground"
+                )
+                try Expect.true(
+                    css.contains(":root[data-theme=\"dark\"]"),
+                    "theme.dark.toggle"
+                )
+                try Expect.equal(
+                    CSSTheme.variable(
+                        .init(rawValue: "markdown.heading.1"),
+                        .weight
+                    ).rawValue,
+                    "--theme-markdown-heading-1-weight",
+                    "theme.variable.name"
+                )
+            }
+        }
 
     static let selectorRoundTrip =
         TestFlow(
